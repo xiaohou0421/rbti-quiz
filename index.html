@@ -89,7 +89,7 @@ body::before {
 .start-title::after {
   content: attr(data-text);
   position: absolute;
-  top: 9px; left: 9px;
+  top: 0.12em; left: 0.12em;
   color: var(--red);
   z-index: -1;
   pointer-events: none;
@@ -181,8 +181,8 @@ body::before {
   margin: 1.5rem 0 1rem;
 }
 .result-rapper-img-wrap img {
-  width: 200px;
-  height: 200px;
+  width: clamp(150px, 40vw, 200px);
+  height: clamp(150px, 40vw, 200px);
   object-fit: cover;
   border-radius: 50%;
   display: none;
@@ -307,6 +307,7 @@ body::before {
   gap: 1.3rem;
   max-width: 620px;
   margin: 0 auto;
+  min-height: 100vh;
 }
 
 .result-label {
@@ -347,7 +348,7 @@ body::before {
 .result-rapper-name::after {
   content: attr(data-rapper);
   position: absolute;
-  top: 5px; left: 5px;
+  top: 0.06em; left: 0.06em;
   color: var(--red);
   z-index: -1;
   pointer-events: none;
@@ -397,7 +398,8 @@ body::before {
   opacity: 0.82;
   max-width: 440px;
   text-align: left;
-  margin-top: 1.5rem;
+  margin: 1.5rem auto 0;
+  padding: 0 1rem;
 }
 
 .result-btns {
