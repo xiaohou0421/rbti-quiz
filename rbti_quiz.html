@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>人不太行 · 说唱人格测试</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #7CA0B8;
+  --bg-dark: #5A7E96;
+  --cream: #F2EDE4;
+  --red: #C8311A;
+  --dark: #1A1108;
+  --card: rgba(26, 17, 8, 0.16);
+  --font: 'Noto Sans SC', sans-serif;
+}
+
+html { height: 100%; }
+
+body {
+  min-height: 100%;
+  font-family: var(--font);
+  background: linear-gradient(175deg, #8CB2CA 0%, #6A90A8 50%, #527A90 100%);
+  color: var(--cream);
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ── 颗粒纹理 ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='500' height='500' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.07;
+  pointer-events: none;
+  z-index: 1000;
+  mix-blend-mode: overlay;
+}
+
+/* ── 背景装饰大字 ── */
+/* ── 屏幕切换 ── */
+.screen {
+  display: none;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+.screen.active { display: flex; flex-direction: column; align-items: center; }
+
+.fade-in { animation: fadeUp 0.35s ease forwards; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ════════════════════════════
+   开始页
+════════════════════════════ */
+#screen-start {
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 2rem;
+  gap: 1.2rem;
+}
+
+.start-eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.35em;
+  opacity: 0.5;
+  font-weight: 700;
+}
+
+.start-title {
+  font-size: clamp(4.5rem, 22vw, 9rem);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: 0.05em;
+  position: relative;
+  display: inline-block;
+  color: var(--cream);
+}
+.start-title::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 9px; left: 9px;
+  color: var(--red);
+  z-index: -1;
+  pointer-events: none;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.start-subtitle {
+  font-size: 1.15rem;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+}
+
+.start-tagline {
+  font-size: 0.85rem;
+  opacity: 0.55;
+  line-height: 1.7;
+  max-width: 260px;
+  margin: 0 auto;
+}
+
+.btn-start {
+  margin-top: 0.8rem;
+  padding: 1rem 3.5rem;
+  background: var(--cream);
+  color: var(--dark);
+  border: none;
+  font-family: var(--font);
+  font-size: 1.05rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.15s, background 0.15s, color 0.15s;
+  box-shadow: 4px 4px 0 var(--dark);
+}
+.btn-start:hover {
+  transform: translate(-2px, -2px);
+  background: var(--red);
+  color: var(--cream);
+  box-shadow: 6px 6px 0 var(--dark);
+}
+.btn-start:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--dark);
+}
+
+.start-note {
+  font-size: 0.72rem;
+  opacity: 0.35;
+  letter-spacing: 0.05em;
+}
+
+.start-disclaimer {
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  line-height: 1.7;
+  max-width: 300px;
+  margin: 0 auto;
+  color: var(--cream);
+  background: rgba(26, 17, 8, 0.32);
+  border: 1px solid rgba(242, 237, 228, 0.22);
+  border-left: 3px solid rgba(200, 49, 26, 0.7);
+  border-radius: 4px;
+  padding: 8px 14px 8px 12px;
+  text-align: left;
+}
+.start-disclaimer::before {
+  content: '⚠ 免责声明  ';
+  font-weight: 700;
+  opacity: 0.6;
+  display: block;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.start-contact {
+  font-size: 0.72rem;
+  font-weight: 700;
+  opacity: 0.4;
+  letter-spacing: 0.08em;
+}
+
+.result-rapper-img-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 1.5rem 0 1rem;
+}
+.result-rapper-img-wrap img {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 50%;
+  display: none;
+}
+
+.result-disclaimer {
+  font-size: 0.6rem;
+  letter-spacing: 0.05em;
+  color: var(--cream);
+  opacity: 0.4;
+  margin-top: 2rem;
+  padding: 0 1rem;
+  line-height: 1.6;
+}
+
+/* ════════════════════════════
+   测试页
+════════════════════════════ */
+#screen-quiz {
+  padding: 5rem 1.5rem 3rem;
+  max-width: 660px;
+  width: 100%;
+  margin: 0 auto;
+  gap: 1.4rem;
+  align-items: flex-start;
+}
+
+/* 顶部进度条 */
+.progress-bar-track {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: rgba(242, 237, 228, 0.15);
+  z-index: 100;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: var(--cream);
+  transition: width 0.4s ease;
+  width: 0%;
+}
+
+.progress-counter {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  opacity: 0.45;
+}
+
+.question-text {
+  font-size: clamp(1.05rem, 3.2vw, 1.35rem);
+  font-weight: 700;
+  line-height: 1.65;
+  max-width: 600px;
+}
+
+.hint-text {
+  font-size: 0.75rem;
+  opacity: 0.38;
+  letter-spacing: 0.04em;
+  margin-top: -0.4rem;
+}
+
+.options-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.opt-btn {
+  width: 100%;
+  background: var(--card);
+  border: 1px solid rgba(242, 237, 228, 0.18);
+  color: var(--cream);
+  font-family: var(--font);
+  font-size: 0.93rem;
+  line-height: 1.55;
+  padding: 0.95rem 1.2rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, transform 0.12s;
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+.opt-btn:nth-child(1) { transform: none; }
+.opt-btn:nth-child(2) { transform: none; }
+.opt-btn:nth-child(3) { transform: none; }
+
+.opt-btn:hover {
+  background: rgba(242, 237, 228, 0.16);
+  border-color: rgba(242, 237, 228, 0.45);
+  transform: rotate(0deg) translateX(5px) !important;
+}
+.opt-btn.selected {
+  background: var(--cream);
+  color: var(--dark);
+  border-color: var(--cream);
+  transform: rotate(0deg) !important;
+}
+.opt-btn:disabled {
+  cursor: default;
+}
+
+.opt-label {
+  font-weight: 900;
+  font-size: 1.1em;
+  opacity: 0.45;
+  flex-shrink: 0;
+  min-width: 1.2rem;
+}
+
+/* ════════════════════════════
+   结果页
+════════════════════════════ */
+#screen-result {
+  justify-content: center;
+  text-align: center;
+  padding: 5rem 2rem 4rem;
+  gap: 1.3rem;
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.result-label {
+  font-size: 0.78rem;
+  letter-spacing: 0.35em;
+  opacity: 0.45;
+  font-weight: 700;
+}
+
+.result-names-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.3em 0.6em;
+  line-height: 1.05;
+}
+
+.result-type-name {
+  font-size: clamp(2rem, 9vw, 4rem);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: 0.04em;
+  color: var(--cream);
+  display: inline-block;
+  opacity: 0.72;
+}
+
+.result-rapper-name {
+  font-size: clamp(2rem, 9vw, 4rem);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: 0.04em;
+  position: relative;
+  display: inline-block;
+  color: var(--cream);
+}
+.result-rapper-name::after {
+  content: attr(data-rapper);
+  position: absolute;
+  top: 5px; left: 5px;
+  color: var(--red);
+  z-index: -1;
+  pointer-events: none;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* ── 统计条 ── */
+.result-stats {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  opacity: 0.42;
+  margin-top: 0.5rem;
+}
+.result-stats .stat-dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.result-pct {
+  font-size: clamp(2.5rem, 10vw, 4rem);
+  font-weight: 900;
+  line-height: 1;
+}
+.result-pct .pct-unit {
+  font-size: 1rem;
+  opacity: 0.6;
+}
+
+.result-rule {
+  width: 50px;
+  height: 2px;
+  background: rgba(242, 237, 228, 0.3);
+  margin: 0 auto;
+}
+
+.result-desc {
+  font-size: 0.97rem;
+  line-height: 1.85;
+  opacity: 0.82;
+  max-width: 440px;
+  text-align: left;
+  margin-top: 1.5rem;
+}
+
+.result-btns {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 1.8rem;
+}
+
+.btn-restart {
+  padding: 0.75rem 2.5rem;
+  background: transparent;
+  border: 2px solid rgba(242, 237, 228, 0.5);
+  color: var(--cream);
+  font-family: var(--font);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.btn-restart:hover {
+  background: var(--cream);
+  color: var(--dark);
+  border-color: var(--cream);
+}
+
+.btn-stats {
+  padding: 0.75rem 2.5rem;
+  background: transparent;
+  border: 2px solid rgba(242, 237, 228, 0.3);
+  color: var(--cream);
+  font-family: var(--font);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  opacity: 0.6;
+  transform: rotate(-0.5deg);
+  transition: opacity 0.15s, background 0.15s, color 0.15s, border-color 0.15s;
+}
+.btn-stats:hover {
+  opacity: 1;
+  background: rgba(242, 237, 228, 0.1);
+  border-color: rgba(242, 237, 228, 0.6);
+}
+
+/* ── 统计弹层 ── */
+.stats-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 999;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+.stats-modal.open {
+  display: flex;
+}
+.stats-panel {
+  background: #1a2a38;
+  border: 1px solid rgba(242,237,228,0.15);
+  border-radius: 4px;
+  padding: 2rem 1.5rem 1.5rem;
+  width: 100%;
+  max-width: 420px;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  color: var(--cream);
+}
+.stats-close {
+  position: absolute;
+  top: 0.8rem; right: 1rem;
+  background: none; border: none;
+  color: var(--cream); opacity: 0.5;
+  font-size: 1rem; cursor: pointer;
+}
+.stats-close:hover { opacity: 1; }
+.stats-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  opacity: 0.45;
+  margin-bottom: 0.6rem;
+  text-transform: uppercase;
+}
+.stats-total {
+  font-size: 1.6rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  margin-bottom: 1.4rem;
+}
+.stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.stats-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.82rem;
+}
+.stats-row-name {
+  width: 7em;
+  flex-shrink: 0;
+  opacity: 0.75;
+  letter-spacing: 0.04em;
+}
+.stats-bar-wrap {
+  flex: 1;
+  height: 6px;
+  background: rgba(242,237,228,0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.stats-bar-fill {
+  height: 100%;
+  background: var(--red);
+  border-radius: 3px;
+  transition: width 0.6s ease;
+  min-width: 2px;
+}
+.stats-row-count {
+  width: 2.5em;
+  text-align: right;
+  font-weight: 700;
+  opacity: 0.6;
+  font-size: 0.78rem;
+}
+
+.btn-share {
+  padding: 0.75rem 2.5rem;
+  background: var(--red);
+  border: 2px solid var(--red);
+  color: var(--cream);
+  font-family: var(--font);
+  font-size: 0.88rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, transform 0.15s;
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.3);
+}
+.btn-share:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.35);
+}
+.btn-share:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+}
+
+/* ── 分享卡片（离屏渲染） ── */
+#share-card {
+  position: fixed;
+  left: -9999px;
+  top: 0;
+  width: 600px;
+  min-height: 600px;
+  background: linear-gradient(160deg, #8CB2CA 0%, #527A90 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 52px 52px;
+  gap: 14px;
+  font-family: 'Noto Sans SC', sans-serif;
+  color: #F2EDE4;
+  box-sizing: border-box;
+  pointer-events: none;
+  z-index: -1;
+}
+#share-card .sc-label {
+  font-size: 11px;
+  letter-spacing: 0.35em;
+  opacity: 0.8;
+  font-weight: 400;
+  margin-top: 16px;
+}
+#share-card .sc-top-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  width: 100%;
+  padding-right: 50px;
+}
+#share-card .sc-left {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+#share-card .sc-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+#share-card .sc-right img {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(242,237,228,0.25);
+  display: block;
+}
+#share-card .sc-type {
+  font-size: 58px;
+  font-weight: 900;
+  color: #F2EDE4;
+  display: block;
+  line-height: 1.0;
+}
+#share-card .sc-rapper {
+  font-size: 22px;
+  font-weight: 700;
+  color: #C8311A;
+  display: block;
+  text-align: center;
+}
+#share-card .sc-pct {
+  font-size: 44px;
+  font-weight: 900;
+  opacity: 0.9;
+}
+#share-card .sc-pct span {
+  font-size: 14px;
+  opacity: 0.55;
+  margin-left: 3px;
+}
+#share-card .sc-rule {
+  width: 40px;
+  height: 2px;
+  background: rgba(242,237,228,0.35);
+}
+#share-card .sc-desc {
+  font-size: 15px;
+  line-height: 1.85;
+  opacity: 0.8;
+  max-width: 480px;
+}
+#share-card .sc-footer {
+  font-size: 11px;
+  opacity: 0.3;
+  letter-spacing: 0.12em;
+  margin-top: 8px;
+}
+
+
+/* ════════════════════════════
+   转业结局
+════════════════════════════ */
+#screen-zhuan-ye {
+  justify-content: center;
+  text-align: center;
+  padding: 5rem 2rem 4rem;
+  gap: 1.4rem;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.zy-stamp {
+  display: inline-block;
+  border: 2px solid rgba(242, 237, 228, 0.35);
+  padding: 0.3rem 1.2rem;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.35em;
+  opacity: 0.45;
+}
+
+.zy-title {
+  font-size: clamp(1.6rem, 7vw, 2.8rem);
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.zy-body {
+  font-size: 0.93rem;
+  line-height: 1.95;
+  opacity: 0.78;
+  text-align: left;
+}
+.zy-body strong {
+  color: var(--cream);
+  font-weight: 900;
+  opacity: 1;
+}
+.zy-red { color: #C8311A; font-weight: 700; }
+
+.zy-ending {
+  font-size: 0.8rem;
+  opacity: 0.4;
+  letter-spacing: 0.06em;
+  line-height: 1.7;
+}
+
+/* ── 响应式 ── */
+@media (max-width: 480px) {
+  #screen-quiz { padding: 4.5rem 1.2rem 2.5rem; }
+  .opt-btn { font-size: 0.87rem; padding: 0.88rem 1rem; }
+  #screen-result, #screen-zhuan-ye { padding: 4rem 1.5rem 3rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- 进度条（全局固定） -->
+<div class="progress-bar-track">
+  <div class="progress-bar-fill" id="progress-fill"></div>
+</div>
+
+<!-- ══════════ 开始页 ══════════ -->
+<div id="screen-start" class="screen active">
+  <p class="start-eyebrow">Rapper Based Type Indicator</p>
+  <h1 class="start-title" data-text="人不太行">人不太行</h1>
+  <p class="start-subtitle">说唱人格测试</p>
+  <p class="start-tagline">45道题<br>找到你的说唱人格原型<br>选最接近你的那个，不需要完全符合</p>
+  <button class="btn-start" onclick="startQuiz()">开始测试</button>
+  <p class="start-note">单次测试约 8 分钟</p>
+  <p class="start-disclaimer">本测试纯属娱乐，结果仅为虚构人格参考，与任何真实音乐人无关联、无背书、无影射。切勿对号入座，更不要把结果截图发给正主。</p>
+  <p class="start-contact">小红书 @皮裤小美女</p>
+</div>
+
+<!-- ══════════ 测试页 ══════════ -->
+<div id="screen-quiz" class="screen">
+  <p class="progress-counter" id="progress-counter">第 1 / 45 题</p>
+  <p class="question-text" id="question-text"></p>
+  <p class="hint-text">选最接近你真实反应的那个</p>
+  <div class="options-wrap" id="options-wrap"></div>
+</div>
+
+<!-- ══════════ 结果页 ══════════ -->
+<div id="screen-result" class="screen">
+  <p class="result-label">你的说唱人格原型是</p>
+  <h1 class="result-type-name" id="result-type-name" data-name=""></h1>
+  <div class="result-rapper-img-wrap">
+    <img id="result-rapper-img" src="" alt="" onerror="this.style.display='none'">
+  </div>
+  <h1 class="result-rapper-name" id="result-rapper-name"></h1>
+  <div class="result-pct" id="result-pct"></div>
+  <div class="result-stats" id="result-stats"></div>
+  <div class="result-rule"></div>
+  <p class="result-desc" id="result-desc"></p>
+  <div class="result-btns">
+    <button class="btn-share" onclick="shareResult()">生成分享图</button>
+    <button class="btn-restart" onclick="restartQuiz()">再测一次</button>
+    <button class="btn-restart" onclick="openStats()">查看统计</button>
+  </div>
+  <p class="result-disclaimer">本测试纯属娱乐，结果为虚构人格参考，与任何真实音乐人无关联、无背书、无影射</p>
+</div>
+
+<!-- 统计弹层 -->
+<div id="stats-modal" class="stats-modal" onclick="if(event.target===this)closeStats()">
+  <div class="stats-panel">
+    <button class="stats-close" onclick="closeStats()">✕</button>
+    <p class="stats-title">测试统计</p>
+    <div class="stats-total" id="stats-total">加载中…</div>
+    <div class="stats-list" id="stats-list"></div>
+  </div>
+</div>
+
+<!-- 离屏分享卡片 -->
+<div id="share-card">
+  <p class="sc-label">人不太行 · 说唱人格测试 · RBTI</p>
+  <div class="sc-top-row">
+    <div class="sc-left">
+      <span class="sc-type" id="sc-type"></span>
+      <div class="sc-pct" id="sc-pct"></div>
+    </div>
+    <div class="sc-right">
+      <img id="sc-img" src="" alt="" onerror="this.style.display='none'">
+      <span class="sc-rapper" id="sc-rapper"></span>
+    </div>
+  </div>
+  <div class="sc-rule"></div>
+  <p class="sc-desc" id="sc-desc"></p>
+  <p class="sc-footer">rbti.app · 你的说唱人格</p>
+</div>
+
+<!-- ══════════ 转业结局 ══════════ -->
+<div id="screen-zhuan-ye" class="screen">
+  <div class="zy-stamp">系统通知</div>
+  <h2 class="zy-title">系统检测完毕</h2>
+  <p class="zy-body">
+    您的人格维度高度契合<span class="zy-red">国家公务员考试</span>报考条件。<br><br>
+    为您推荐岗位：某地级市文化广电局基层科员（<strong>有编制</strong>）<br><br>
+    岗位职责：负责辖区文艺演出报批手续、协助整理年度汇报材料、每周五参加科室例会。<br><br>
+    薪资待遇：五险一金，法定节假日正常休息，逢年过节有慰问品。<br><br>
+    您对稳定的渴望、对规则的遵循、对突发状况的本能回避——<br>在那里，都会被善待。
+  </p>
+  <p class="zy-ending">话筒已帮您轻轻放下。<br>祝考编顺利。</p>
+  <button class="btn-restart" onclick="restartQuiz()">我还想再试试</button>
+  <button class="btn-share" onclick="shareZhuanYe()">分享结果</button>
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+// 题库 · 45题
+// ════════════════════════════════════════════════
+const QUESTIONS = [
+  { id:'Q1',  text:'演出中设备故障，音乐突然停了，台下几千人在等，灯还打在你脸上。你：', opts:['开始freestyle，把这个意外变成今晚最难忘的片段','跟台下说实话"等五分钟，马上好"，然后等','示意工作人员，你先退场，不在这个状态下凑合'] },
+  { id:'Q2',  text:'今晚是你迄今为止最大的演出，开场前一小时，你在后台：', opts:['律动热场，能量要拉满才能上台，你需要这种仪式感','正常等候，上了台自然就来了','戴着耳机一个人坐着，你上台了会是另一个状态'] },
+  { id:'Q3',  text:'你刚写出了一首很满意的歌，老友突然说想来个联名。你：', opts:['立刻叫他进来，两个人的东西可能更有意思','先把你的部分定好，他填另一半，互不干涉','婉拒——这首歌是你自己的，你不想稀释它'] },
+  { id:'Q4',  text:'厂牌安排你带一个新人，让他蹭你的资源涨人气。你：', opts:['没问题，喜欢传帮带，圈子要靠大家一起建','可以，但先看实力，值得带才带','谢谢，你一个人做就好，别来分散注意力'] },
+  { id:'Q5',  text:'圈内大佬突然私信你，说想聊合作。你：', opts:['立刻回，约时间见面，人脉就是资源','先回消息，但不急，看看方向对不对再说','没动力，要聊先把作品拿出来'] },
+  { id:'Q6',  text:'组合里有个成员，实力明显不如你，但人缘极好，还有圈内大哥罩着。你心里清楚这个差距，但别人好像看不见。你：', opts:['直接全网开喷，让所有人都知道这里是怎么回事','私下跟他谈过，表达过不满，但没闹到台面上','憋着——圈子就这样，硬碰没好处，等时机'] },
+  { id:'Q7',  text:'感情刚结束，你在这段时间内更可能：', opts:['三天内写出一首破防情歌，痛苦就是素材','跟最近的兄弟喝一顿，聊完就过了','自己消化，可能半年后在某首歌里埋一个没人看得出的句子'] },
+  { id:'Q8',  text:'拿到人生第一个重量级奖项，上台的瞬间，你：', opts:['情绪直接上来，说了很多，眼眶可能红了','发表了提前准备好的感谢词，有感情但没失控','感谢了三个人，点到为止，然后下台'] },
+  { id:'Q9',  text:'积压了半年的暗流，对方终于在新歌里点了你的名。早上醒来，手机500条未读。你：', opts:['先刷一遍，摸清舆论风向，当天出回应曲','打给最信任的人，问他值不值得接这个','放下手机，去健身，让子弹先飞一会儿'] },
+  { id:'Q10', text:'你以为没人知道的一段关系，被同行写进了新歌，评论区已经炸了。你：', opts:['当天发长文，把来龙去脉说清楚，主动权要在自己手里','联系律师，先评估，再决定动不动','继续沉默——你不承认，它就不存在'] },
+  { id:'Q11', text:'你发了一首新歌，第一天播放量不理想。你：', opts:['当天反复刷数据，开始怀疑自己，当晚进棚改','有点担心，给它一周时间，再看','数据是数据，你该做的已经做了，等着'] },
+  { id:'Q12', text:'巡演最密集的时候，对方发消息："我知道你很忙，所以这条消息我想了三天。我感觉你没时间放在这段关系上了。"你：', opts:['当天改了行程，飞过去见他/她','打了个长电话，把所有感受都说清楚','回了"我知道，再撑一段时间"，继续赶下一个城市'] },
+  { id:'Q13', text:'一个大牌运动品牌来找你代言，钱很多但画风不太match。你：', opts:['接——商业是商业，音乐是音乐，两码事','谈谈看，创意上给你足够空间就可以','谢谢，代言是人设的延伸，这个不行'] },
+  { id:'Q14', text:'春晚级别的演出找你，舞台够大，但几句你觉得是灵魂的歌词必须改掉。你：', opts:['改，这个曝光量值那几个字','谈——哪些能动，哪些是底线，逐字谈','谢谢，改了就不是这首歌了'] },
+  { id:'Q15', text:'你开始写一首新歌，通常是因为：', opts:['情绪来了，不写会爆——某件事、某个人、某种感觉撑不住了','有一个观点或故事想表达，在脑子里憋了很久了','被一个beat或音乐结构的想法击中，从声音出发'] },
+  { id:'Q16', text:'分手两个月，朋友说你这段时间写的东西是你迄今最好的，之前一直觉得你没状态的制作人主动来联系你了。你：', opts:['清楚——你在用痛苦换作品，而且你接受这个代价','又欣慰又别扭，不想靠失去一段感情证明自己的创作力','你根本还没出来，什么也没写，他们说的都是之前的存货'] },
+  { id:'Q17', text:'你觉得"成了"是什么感觉：', opts:['发新歌24小时内看到现象级数据','同行在采访里提到你，说"那是个厉害的人"','自己听到一首做完的歌，觉得"这个东西我做对了"'] },
+  { id:'Q18', text:'五年后，你希望自己在哪里：', opts:['已经跨出音乐，在做品牌、投资或影视','还在做音乐，但已经是这个genre里被反复引用的名字','可能还在做，可能转了，只要做的事情让自己觉得值就行'] },
+  { id:'Q19', text:'你最在意歌词里的什么：', opts:['技术——flow、音节密度、押韵结构，这是门槛','故事——要有真实感，听众能代入一个具体的人','意象——一句话里有五层意思，懂的人自然懂'] },
+  { id:'Q20', text:'有人说你的词"听不太懂"。你：', opts:['这是个问题，开始考虑怎么让更多人能听进去','无所谓，不同的歌面向不同的人','谢谢'] },
+  { id:'Q21', text:'你的下一张专辑，你在考虑：', opts:['延续上张方向，把这个风格做到没人能超过你','在原来基础上明显进化，保持识别度但有突破','彻底变风格，上一张是上一张，这张要让人重新认识你'] },
+  { id:'Q22', text:'你和前任的合作曲还在平台上流着，有人说"那首歌是他/她最好的作品"，有人联系你问有没有可能再出一首。你：', opts:['没有可能。那首歌属于那段时间，就让它停在那里','音乐层面可以聊，但两个人的关系你不想再动','你现在根本不想再听那首歌'] },
+  { id:'Q23', text:'制作人给了你一个你从没碰过的风格beat。你：', opts:['来了，不熟悉才有意思','先放几天感受，有灵感了再试','谢了，你有自己的方向'] },
+  { id:'Q24', text:'圈内有一种新sound正在崛起，所有人都在跟风。你：', opts:['感兴趣，去研究它，但会做一个属于自己的版本','等等看，看这个东西能不能活过两年','和你没关系，你做你的'] },
+  { id:'Q25', text:'你觉得自己在圈内是：', opts:['独一无二，没有可以对标的人','承上启下的那种，有传承也有自己的东西','还在找，你不确定自己是哪一路的'] },
+  { id:'Q26', text:'颁奖典礼，你今年最满意的专辑颗粒无收，获奖的那个人你觉得差你一截。他正在台上感谢他妈妈。你：', opts:['走上去，拿过麦克风，说该说的——后果以后再说','坐着鼓掌，但当晚进棚，把这口气写成下一首歌','提前离席，待在这里是折磨自己'] },
+  { id:'Q27', text:'你在公众面前呈现的形象：', opts:['台上是另一个人，台下的你很少有人见过','有包装，但核心是真实的','就是你本人，你没有在"经营人设"这件事'] },
+  { id:'Q28', text:'你在跟一个完全不在圈里的人谈恋爱，对方说够了做"秘密"，想公开。你知道公开了，两个人的日子都会进舆论场。你：', opts:['说了"暂时不行"——然后不确定暂时是多久','约了一个时间点，不是现在，但你会做到','公开——你不想让他/她觉得你在藏着这段关系'] },
+  { id:'Q29', text:'你发了一首歌，引发大规模争议。你：', opts:['站出来发长文解释立场，甚至跟出一首回应曲','保持沉默，让音乐自己说话','发一首新歌，把这件事盖过去'] },
+  { id:'Q30', text:'你三年前随手出的一首歌，突然因为一个沙雕抖音梗爆了，被配各种跟你风格完全不搭的内容。你：', opts:['直接转发蹭热度，流量就是流量，别装','发了条"谢谢大家"，但心里五味杂陈','难受，你知道这不是它该有的命运，但你改变不了'] },
+  { id:'Q31', text:'演出进行到一半，台下有人晕倒了，安保在处理，但音乐还在放，大部分观众还在high。台上只有你能控制这个场面。你：', opts:['立刻暂停演出，抢过话筒让大家冷静，你要确认那个人没事','用音乐节奏慢慢把现场能量降下来，引导观众让出空间','继续，安保会处理，你打断演出只会制造更大的混乱'] },
+  { id:'Q32', text:'厂牌给你安排了一个你看不上的rapper强制合作，说这张单曲是合同里规定必须完成的。你：', opts:['先跟那个rapper谈，看能不能做出让双方都满意的东西','完成，但你把自己的部分做到无可挑剔，让对比一眼就看出来','找律师看合同有没有漏洞，这首歌你不想出'] },
+  { id:'Q33', text:'你和一个有自己粉丝群体的rapper谈了恋爱，两边粉丝开始互撕。你的团队说这对双方圈子运营都是损耗。你：', opts:['先减少公开互动，让粉丝情绪降温，低调处理','和对方商量，让各自团队出来说几句缓一缓','粉丝的事是粉丝的事，你不会为了避免这件事改变关系'] },
+  { id:'Q34', text:'某次直播，有人问了一个涉及你最痛的私事的问题，而且问得很准。镜头开着，几万人在看。你：', opts:['直接崩了，哭出来，什么都说了——你藏不住','停顿了几秒，说"这个问题我现在不方便回答"，然后岔开话题','面无表情答了一个不是答案的答案，然后结束直播'] },
+  { id:'Q35', text:'对方在新歌里提到了你的家人，甚至用上了你经历过的真实悲剧。这已经不是圈内的事了。你：', opts:['这是不可逾越的线，你不用歌回应了——你要找他本人谈','出一首歌，把这件事彻底说清楚，让所有人知道他干了什么','沉默，你不想让这件事继续发酵，但这个人你记住了'] },
+  { id:'Q36', text:'你最亲近的制作人突然说要单飞，以后不合作了，没有给出具体原因。你：', opts:['立刻崩溃，那天什么都做不了，反复回想哪里出了问题','很难受，但冷静了两天，约他出来好好谈一次','尊重他的决定，各走各的，缘分就到这里'] },
+  { id:'Q37', text:'巡演结束，某个城市的粉丝私信你，话说得很直白——你看懂了，而且是你喜欢的类型。你：', opts:['约了——名气是你赚来的，这也是它的一部分','加了联系方式，聊了几句，什么都没说清楚，但都知道是怎么回事','直接不回——不想把这种事和你的名字绑在一起'] },
+  { id:'Q38', text:'你刚完成了一张你认为是你迄今最好的专辑，但厂牌说市场不接受，建议推迟发行，做一个更"友好"的版本。你：', opts:['原版发，哪怕自己掏钱，这张专辑你不允许它被改','谈判，看哪些地方可以妥协，哪些是核心不动','听厂牌的，你不想为了一张专辑和整个系统对抗'] },
+  { id:'Q39', text:'你最好的一首歌十年后被一个新人翻唱，爆了，播放量比你当年的版本还高。你：', opts:['骄傲——这首歌活下去了，这比任何奖项都值','矛盾——你很欣慰，但你也想要那个流量','有点失落，人们记住的是那首歌，不是你'] },
+  { id:'Q40', text:'你写了一首歌，里面有一句话被断章取义，被解读成你完全没有的意思，而且这个解读传播很广。你：', opts:['出来解释，把原文语境说清楚，错误的解读你不接受','让它去，懂的人懂，解释了反而显得心虚','把那首歌从所有平台下架，重新发一个修改版'] },
+  { id:'Q41', text:'你有几首歌写的是一段感情，后来分手了。那段感情的对方出来说"他/她写的那些都是假的，博流量而已"。你：', opts:['直接回应，把创作时间线和背景全部公开，让大家自己判断','不理，你知道你写的是什么，不需要对那个人解释','把那几首歌下架，不想再被扯进这件事里'] },
+  { id:'Q42', text:'你做了一首完全不像你的实验性作品，发出去后口碑两极分化：老粉一半骂一半力挺，新听众开始感兴趣。你：', opts:['这正是你想要的，你要继续往这个方向走','分析了哪些部分有效，下次做得更精准','这首是一次尝试，下张还是回来做你擅长的'] },
+  { id:'Q43', text:'你提的分手。对方后来在采访里说："他/她一直把自我放在感情之上，从来没有真正投入过。"你：', opts:['出来回应，这不是真的，你说得清楚自己投入了多少','沉默——真相你知道，感情的事不需要大众来裁决','有点扎心，你开始反复想这句话是不是真的'] },
+  { id:'Q44', text:'有媒体挖出了你五年前说过的一段话，和你现在的公众形象完全矛盾，截图开始在网上传播。你：', opts:['立刻发声，承认你变了，并且解释为什么变了','让团队发声明，说当时的语境不是这个意思','先沉默，看看这件事能传多远，再决定要不要处理'] },
+  { id:'Q45', text:'你的一首歌被某个社会事件借用，成为了某种符号。你完全没有预料到这一点，但现在你的名字已经和这件事绑定了。你：', opts:['公开表态，说清楚你的立场，不管这个立场让谁不高兴','发一条模糊的声明，既不完全切割也不完全站队','保持绝对沉默，你的音乐是你的音乐，你不参与任何事'] },
+];
+
+// ════════════════════════════════════════════════
+// 评分引擎
+// ════════════════════════════════════════════════
+const DIM_MAP = {
+  Q1:'S1', Q2:'S1', Q3:'S2', Q4:'S2', Q5:'S3', Q6:'S3',
+  Q7:'E1', Q8:'E1', Q9:'E2', Q10:'E2', Q11:'E3', Q12:'E3',
+  Q13:'A1', Q14:'A1', Q15:'A2', Q16:'A2', Q17:'A3', Q18:'A3',
+  Q19:'Ac1', Q20:'Ac1', Q21:'Ac2', Q22:'Ac2', Q23:'Ac3', Q24:'Ac3',
+  Q25:'So1', Q26:'So1', Q27:'So2', Q28:'So2', Q29:'So3', Q30:'So3',
+  Q31:'S1', Q32:'S2', Q33:'S3', Q34:'E1', Q35:'E2', Q36:'E3',
+  Q37:'A1', Q38:'A2', Q39:'A3', Q40:'Ac1', Q41:'Ac2', Q42:'Ac3',
+  Q43:'So1', Q44:'So2', Q45:'So3'
+};
+
+const DIMS = ['S1','S2','S3','E1','E2','E3','A1','A2','A3','Ac1','Ac2','Ac3','So1','So2','So3'];
+const SCORE = { A:2, B:1, C:0, D:1 };
+const NUM   = { H:2, M:1, L:0 };
+
+function toLevel(s) {
+  if (s >= 5) return 'H';
+  if (s >= 2) return 'M';
+  return 'L';
+}
+
+function calcProfile(answers) {
+  const sc = {};
+  DIMS.forEach(d => sc[d] = 0);
+  Object.entries(answers).forEach(([q, a]) => {
+    const d = DIM_MAP[q];
+    if (d) sc[d] += SCORE[a] || 0;
+  });
+  const p = {};
+  DIMS.forEach(d => p[d] = toLevel(sc[d]));
+  return p;
+}
+
+function dist(a, b) {
+  return DIMS.reduce((s, d) => s + Math.abs(NUM[a[d]] - NUM[b[d]]), 0);
+}
+
+const TYPES = [
+  { name:'清醒法官', rappers:['Kendrick Lamar'],
+    desc:'你用音乐作为手术刀，切开社会，也切开自己。你不屑于赢得所有人，但你要赢得时间。',
+    p:{S1:'H',S2:'M',S3:'M',E1:'H',E2:'H',E3:'H',A1:'L',A2:'H',A3:'H',Ac1:'H',Ac2:'M',Ac3:'M',So1:'H',So2:'H',So3:'H'} },
+  { name:'混沌天才', rappers:['Kanye West'],
+    desc:'你是宇宙中心，或者你至少是这么认为的。混乱是你的创作原料，偏执是你的工作方法。你的问题从来不是才华，而是边界。',
+    p:{S1:'H',S2:'H',S3:'H',E1:'H',E2:'H',E3:'H',A1:'H',A2:'H',A3:'H',Ac1:'H',Ac2:'L',Ac3:'H',So1:'H',So2:'H',So3:'H'} },
+  { name:'自毁天才', rappers:['PGOne','李京泽贝贝','Fox 福克斯'],
+    desc:'你拥有让所有人停下来听的能力，但你也拥有一种神秘的本领，能在最好的时机把一切搞砸。你不是坏人，你只是对自己下手太重。',
+    p:{S1:'H',S2:'M',S3:'M',E1:'H',E2:'H',E3:'H',A1:'H',A2:'H',A3:'H',Ac1:'M',Ac2:'M',Ac3:'M',So1:'L',So2:'L',So3:'L'} },
+  { name:'情绪企业家', rappers:['Drake','马思唯','Key.L 刘聪','KnowKnow'],
+    desc:'你把感情当成产品，做得无比精良。你是最懂流量的人，也是最敏感的人，只是你把这两件事都变成了钱。',
+    p:{S1:'H',S2:'H',S3:'H',E1:'H',E2:'M',E3:'H',A1:'H',A2:'H',A3:'H',Ac1:'M',Ac2:'M',Ac3:'M',So1:'M',So2:'M',So3:'M'} },
+  { name:'创伤炼金师', rappers:['Eminem'],
+    desc:'你把最深的伤口变成最锋利的武器。你的音乐是治疗室，也是法庭,也是手榴弹。你活下来了，但你不会假装什么都没发生过。',
+    p:{S1:'H',S2:'M',S3:'L',E1:'H',E2:'H',E3:'H',A1:'M',A2:'H',A3:'H',Ac1:'H',Ac2:'H',Ac3:'M',So1:'H',So2:'M',So3:'H'} },
+  { name:'规则推土机', rappers:['Tyler The Creator','GALI'],
+    desc:'你天生对"应该怎样"过敏。你每张专辑都是一次蜕皮，别人还没看懂上一张，你已经是另一个人了。',
+    p:{S1:'H',S2:'M',S3:'M',E1:'M',E2:'M',E3:'M',A1:'M',A2:'H',A3:'H',Ac1:'H',Ac2:'L',Ac3:'H',So1:'H',So2:'M',So3:'M'} },
+  { name:'思考潜水员', rappers:['J. Cole','王以太'],
+    desc:'你不急，从来不急。你宁愿等三年做出一张让自己满意的东西，也不愿意每季度交一份差事。你的听众知道等待是值得的。',
+    p:{S1:'M',S2:'M',S3:'M',E1:'M',E2:'M',E3:'H',A1:'L',A2:'H',A3:'H',Ac1:'H',Ac2:'H',Ac3:'L',So1:'H',So2:'H',So3:'M'} },
+  { name:'氛围制造机', rappers:['Travis Scott','Thomeboydontkill'],
+    desc:'你卖的不是歌，是体验。你的演出是另一个维度，你的专辑是一个可以住进去的空间。你比任何人都懂得如何让人沉浸。',
+    p:{S1:'H',S2:'H',S3:'H',E1:'M',E2:'L',E3:'L',A1:'H',A2:'M',A3:'H',Ac1:'L',Ac2:'M',Ac3:'H',So1:'M',So2:'H',So3:'M'} },
+  { name:'迷雾行者', rappers:['Future','Mula Sakee'],
+    desc:'你不解释，你不辩护，你只是存在。你的情绪像雾，你本人也像雾——你在那里，但你不让人抓住。',
+    p:{S1:'M',S2:'H',S3:'H',E1:'H',E2:'L',E3:'H',A1:'H',A2:'H',A3:'M',Ac1:'L',Ac2:'M',Ac3:'M',So1:'L',So2:'L',So3:'M'} },
+  { name:'扫地僧', rappers:['Takeoff'],
+    desc:'你不需要被看见，你只需要被听见。组里最低调，技术最扎实。等别人终于发现你的时候，你已经做了很久了。',
+    p:{S1:'M',S2:'H',S3:'M',E1:'L',E2:'L',E3:'M',A1:'M',A2:'H',A3:'M',Ac1:'H',Ac2:'H',Ac3:'L',So1:'H',So2:'H',So3:'L'} },
+  { name:'集体委员', rappers:['Quavo','Offset','Feezy'],
+    desc:'你在一起的时候最有力量。你需要能量流动，你需要有人在场，你需要圈子。你不是不能单飞，你只是觉得没必要。',
+    p:{S1:'H',S2:'H',S3:'H',E1:'M',E2:'M',E3:'M',A1:'H',A2:'M',A3:'H',Ac1:'L',Ac2:'M',Ac3:'L',So1:'L',So2:'M',So3:'H'} },
+  { name:'江湖诗人', rappers:['GAI周延','Damnshine 大傻'],
+    desc:'你用的是你自己的语言，说的是你自己那片土地的事。你不需要纽约认可你，你的地盘认可你就够了。',
+    p:{S1:'H',S2:'M',S3:'H',E1:'H',E2:'H',E3:'H',A1:'M',A2:'H',A3:'M',Ac1:'H',Ac2:'H',Ac3:'L',So1:'H',So2:'H',So3:'M'} },
+  { name:'人民艺术家', rappers:['Gem 宝石','王齐铭'],
+    desc:'你不高冷，你不难懂，你让所有人都觉得这首歌是为他们写的——因为确实是。',
+    p:{S1:'H',S2:'H',S3:'H',E1:'H',E2:'L',E3:'L',A1:'M',A2:'M',A3:'M',Ac1:'L',Ac2:'M',Ac3:'L',So1:'M',So2:'H',So3:'L'} },
+  { name:'技术绅士', rappers:['艾热','XZT 谢子通'],
+    desc:'你对技术的执着达到了一种近乎洁癖的程度。一个音节落错位置你都能听出来，而且你会重做。你不炫技，你只是不接受将就。',
+    p:{S1:'M',S2:'M',S3:'M',E1:'M',E2:'M',E3:'M',A1:'M',A2:'H',A3:'M',Ac1:'H',Ac2:'H',Ac3:'M',So1:'H',So2:'H',So3:'M'} },
+  { name:'矛盾人设', rappers:['姜云升','Pharaoh 法老'],
+    desc:'你上周还在教人如何生活，这周就把自己的人设崩了个干净。你不是坏人，你只是对自己的一致性要求太低，对流量的需求太高。',
+    p:{S1:'H',S2:'H',S3:'H',E1:'H',E2:'H',E3:'H',A1:'H',A2:'M',A3:'H',Ac1:'M',Ac2:'L',Ac3:'M',So1:'L',So2:'L',So3:'H'} },
+  { name:'混乱演员', rappers:['李大奔BENZO','Psy.P'],
+    desc:'你的混乱是精心设计的混乱。你知道自己在做什么，你只是让别人觉得你不知道。这是一种高级的控制。',
+    p:{S1:'H',S2:'M',S3:'M',E1:'H',E2:'M',E3:'H',A1:'M',A2:'H',A3:'M',Ac1:'M',Ac2:'M',Ac3:'H',So1:'M',So2:'H',So3:'M'} },
+  { name:'地头英雄', rappers:['Kungfu-Pen 功夫胖','辉子'],
+    desc:'你不需要走出去，走出去反而是损耗。你的力量来自你扎根的那片土地，你的听众是真实的人，不是数据。',
+    p:{S1:'H',S2:'H',S3:'H',E1:'H',E2:'H',E3:'M',A1:'L',A2:'H',A3:'M',Ac1:'H',Ac2:'H',Ac3:'L',So1:'H',So2:'H',So3:'M'} },
+  { name:'旋律天才', rappers:['kkluv','macovaseas'],
+    desc:'你用旋律说的话，比任何歌词都清晰。你不需要解释，一个hook就够了，听到的人自然会懂。',
+    p:{S1:'M',S2:'H',S3:'M',E1:'H',E2:'L',E3:'H',A1:'M',A2:'H',A3:'M',Ac1:'L',Ac2:'M',Ac3:'H',So1:'M',So2:'M',So3:'L'} },
+  { name:'流量偶像', rappers:['TT 谢锐韬','小精灵'],
+    desc:'你天生是被看见的料。你不需要最强的词，不需要最复杂的flow，你需要的你已经有了——那种让人想一直看你的气质。',
+    p:{S1:'H',S2:'H',S3:'H',E1:'H',E2:'L',E3:'H',A1:'H',A2:'M',A3:'H',Ac1:'L',Ac2:'M',Ac3:'L',So1:'L',So2:'L',So3:'L'} },
+  { name:'伤痛文学家', rappers:['Asen 艾志恒','Juice WRLD'],
+    desc:'你把痛苦写得太美了，美到让人忘记那是真的。你的听众爱你，是因为你说出了他们自己说不出口的东西。',
+    p:{S1:'M',S2:'M',S3:'M',E1:'H',E2:'L',E3:'H',A1:'M',A2:'H',A3:'M',Ac1:'M',Ac2:'M',Ac3:'M',So1:'M',So2:'M',So3:'L'} },
+  { name:'硬核炮筒', rappers:['秃子2Z','Buzzy'],
+    desc:'你不拐弯，从来不拐弯。你说的就是你想说的，打的就是你要打的人。你可能不是最受欢迎的，但没有人不知道你在说什么。',
+    p:{S1:'H',S2:'M',S3:'M',E1:'H',E2:'H',E3:'H',A1:'L',A2:'H',A3:'M',Ac1:'H',Ac2:'H',Ac3:'L',So1:'H',So2:'H',So3:'H'} },
+  { name:'地域先驱', rappers:['那奇沃夫'],
+    desc:'你在一个没有路的地方走出了路。你的音乐是一份地图，标注着一个很多人不知道但你无比熟悉的地方。',
+    p:{S1:'H',S2:'M',S3:'M',E1:'H',E2:'M',E3:'H',A1:'L',A2:'H',A3:'H',Ac1:'H',Ac2:'H',Ac3:'M',So1:'H',So2:'H',So3:'M'} },
+  { name:'BoomBap守门员', rappers:['Melo 谢宇杰'],
+    desc:'你是传统的守卫者，不是因为守旧，而是因为你知道这门手艺一旦消失就很难找回来。你让每一个音节都有重量。',
+    p:{S1:'M',S2:'M',S3:'L',E1:'M',E2:'M',E3:'M',A1:'L',A2:'H',A3:'M',Ac1:'H',Ac2:'H',Ac3:'L',So1:'H',So2:'H',So3:'M'} },
+  { name:'文艺刺头', rappers:['夏之禹','Frank Ocean','Joji'],
+    desc:'你不做采访，不参加颁奖，不解释任何事。你只发作品——当你觉得好了的时候。这可能需要四年。听众会等的。',
+    p:{S1:'L',S2:'L',S3:'L',E1:'H',E2:'L',E3:'H',A1:'L',A2:'H',A3:'H',Ac1:'H',Ac2:'M',Ac3:'H',So1:'H',So2:'H',So3:'M'} },
+  { name:'圈内解剖师', rappers:['Mercy'],
+    desc:'你用逻辑代替情绪，用分析代替口水。你站在说唱圈边上，也站在说唱圈里面。你不赶潮流，你研究潮流——然后告诉所有人潮流是什么做的。',
+    p:{S1:'L',S2:'M',S3:'H',E1:'L',E2:'H',E3:'M',A1:'M',A2:'M',A3:'H',Ac1:'H',Ac2:'M',Ac3:'H',So1:'H',So2:'M',So3:'H'} },
+];
+
+function findMatch(userP) {
+  let best = null, bestD = Infinity;
+  TYPES.forEach(t => {
+    const d = dist(userP, t.p);
+    if (d < bestD) { bestD = d; best = t; }
+  });
+  if (bestD > 10) return { matched: false };
+  const pool = best.rappers;
+  const picked = pool[Math.floor(Math.random() * pool.length)];
+  return { matched: true, type: best, rapper: picked, pct: Math.round((1 - bestD/30)*100) };
+}
+
+// ════════════════════════════════════════════════
+// 游戏逻辑
+// ════════════════════════════════════════════════
+let curQ = 0;
+let answers = {};
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  el.classList.add('active');
+  el.classList.remove('fade-in');
+  void el.offsetWidth;
+  el.classList.add('fade-in');
+  window.scrollTo(0, 0);
+}
+
+function startQuiz() {
+  curQ = 0;
+  answers = {};
+  showScreen('screen-quiz');
+  renderQ();
+}
+
+function renderQ() {
+  const q = QUESTIONS[curQ];
+  const pct = (curQ / QUESTIONS.length) * 100;
+
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-counter').textContent = `第 ${curQ + 1} / ${QUESTIONS.length} 题`;
+  document.getElementById('question-text').textContent = q.text;
+
+  const wrap = document.getElementById('options-wrap');
+  wrap.innerHTML = '';
+  const labels = ['A','B','C'];
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = `<span class="opt-label">${labels[i]}</span>${opt}`;
+    btn.onclick = () => pick(labels[i], btn);
+    wrap.appendChild(btn);
+  });
+}
+
+function pick(label, clickedBtn) {
+  // 禁用所有按钮防止重复点击
+  document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+  clickedBtn.classList.add('selected');
+
+  answers[QUESTIONS[curQ].id] = label;
+
+  setTimeout(() => {
+    curQ++;
+    if (curQ >= QUESTIONS.length) {
+      showResult();
+    } else {
+      renderQ();
+    }
+  }, 160);
+}
+
+function showResult() {
+  const profile = calcProfile(answers);
+  const match = findMatch(profile);
+
+  if (!match.matched) {
+    // 转业结局 — type_id = 0
+    incrementStat(0);
+    showScreen('screen-zhuan-ye');
+    return;
+  }
+
+  // type_id = 在 TYPES 数组里的索引 + 1（1-26）
+  const typeId = TYPES.indexOf(match.type) + 1;
+
+  // 异步：先增量，再拉取（拉取时新计数已写入）
+  incrementStat(typeId).then(() => fetchAndShowStats(typeId));
+
+  // 结果页主体
+  const nameEl = document.getElementById('result-type-name');
+  nameEl.textContent = match.type.name;
+  nameEl.setAttribute('data-name', match.type.name);
+
+  const rapperEl = document.getElementById('result-rapper-name');
+  rapperEl.textContent = match.rapper;
+  rapperEl.setAttribute('data-rapper', match.rapper);
+  document.getElementById('result-pct').innerHTML = match.pct + '<span class="pct-unit"> % 匹配</span>';
+  document.getElementById('result-desc').textContent = match.type.desc;
+
+  // rapper 图片
+  const imgEl = document.getElementById('result-rapper-img');
+  const imgName = match.rapper.toLowerCase();
+  const imgPath = '图/' + imgName + '.png';
+  imgEl.src = imgPath;
+  imgEl.alt = match.rapper;
+  imgEl.style.display = 'block';
+
+  // 预读图片为 base64，供分享卡使用（绕过 file:// canvas 污染限制）
+  window._shareImgB64 = null;
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', imgPath, true);
+  xhr.responseType = 'blob';
+  xhr.onload = function() {
+    if (xhr.status === 200 || xhr.status === 0) {
+      const reader = new FileReader();
+      reader.onloadend = () => { window._shareImgB64 = reader.result; };
+      reader.readAsDataURL(xhr.response);
+    }
+  };
+  xhr.send();
+
+  // 离屏分享卡片数据同步
+  document.getElementById('sc-type').textContent = match.type.name;
+  document.getElementById('sc-rapper').textContent = match.rapper;
+  document.getElementById('sc-pct').innerHTML = match.pct + '<span>% 匹配</span>';
+  document.getElementById('sc-desc').textContent = match.type.desc;
+  const scImg = document.getElementById('sc-img');
+  scImg.src = '图/' + imgName + '.png';
+  scImg.alt = match.rapper;
+  scImg.style.display = 'block';
+
+  // 进度条填满
+  document.getElementById('progress-fill').style.width = '100%';
+
+  showScreen('screen-result');
+}
+
+function restartQuiz() {
+  document.getElementById('progress-fill').style.width = '0%';
+  startQuiz();
+}
+
+function openStats() {
+  const modal = document.getElementById('stats-modal');
+  modal.classList.add('open');
+  loadStatsPanel();
+}
+
+function closeStats() {
+  document.getElementById('stats-modal').classList.remove('open');
+}
+
+async function loadStatsPanel() {
+  const totalEl = document.getElementById('stats-total');
+  const listEl  = document.getElementById('stats-list');
+  totalEl.textContent = '加载中…';
+  listEl.innerHTML = '';
+
+  if (!_sb) { totalEl.textContent = '暂无数据'; return; }
+
+  try {
+    const { data, error } = await _sb
+      .from('quiz_stats')
+      .select('type_id, type_name, count')
+      .order('type_id');
+
+    if (error || !data) { totalEl.textContent = '加载失败'; return; }
+
+    const total = data.reduce((s, r) => s + (r.count || 0), 0);
+    totalEl.textContent = `共 ${total.toLocaleString()} 人参与测试`;
+
+    // 所有行按 count 降序排列（含转业 type_id=0）
+    const sorted = [...data].sort((a, b) => b.count - a.count);
+    const maxCount = sorted[0]?.count || 1;
+
+    sorted.forEach(r => {
+      const pct = Math.round((r.count / maxCount) * 100);
+      const row = document.createElement('div');
+      row.className = 'stats-row';
+      row.innerHTML = `
+        <span class="stats-row-name">${r.type_name}</span>
+        <div class="stats-bar-wrap">
+          <div class="stats-bar-fill" style="width:${pct}%"></div>
+        </div>
+        <span class="stats-row-count">${r.count}</span>
+      `;
+      listEl.appendChild(row);
+    });
+  } catch(e) {
+    totalEl.textContent = '加载失败';
+    console.warn('stats panel error', e);
+  }
+}
+
+// ════════════════════════════════════════════════
+// Supabase 统计
+// ════════════════════════════════════════════════
+const SUPABASE_URL = 'https://kkyuecgblwqpfrhvmoyg.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_PLWqSMmavhVlszyq-cllFA_wTNptTz0';
+const _sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+
+async function incrementStat(typeId) {
+  if (!_sb) return;
+  try {
+    await _sb.rpc('increment_stat', { p_id: typeId });
+  } catch (e) {
+    console.warn('stat increment failed', e);
+  }
+}
+
+async function fetchAndShowStats(typeId) {
+  if (!_sb) return;
+  try {
+    const { data, error } = await _sb
+      .from('quiz_stats')
+      .select('type_id, count');
+    if (error || !data) return;
+
+    const totalRow = data.reduce((sum, r) => sum + (r.count || 0), 0);
+    const typeRow  = data.find(r => r.type_id === typeId);
+    const typeCount = typeRow ? typeRow.count : 0;
+
+    const statsEl = document.getElementById('result-stats');
+    if (!statsEl) return;
+    if (totalRow > 0) {
+      statsEl.innerHTML =
+        `共 ${totalRow.toLocaleString()} 人测试` +
+        `<span class="stat-dot"></span>` +
+        `${typeCount.toLocaleString()} 人与你同类`;
+    }
+  } catch (e) {
+    console.warn('stat fetch failed', e);
+  }
+}
+
+async function shareResult() {
+  const btn = document.querySelector('.btn-share');
+  const origText = btn.textContent;
+  btn.textContent = '生成中…';
+  btn.disabled = true;
+
+  const card = document.getElementById('share-card');
+  card.style.left = '-9999px';
+  card.style.top = '0';
+
+  // 用预读好的 base64 注入分享卡图片
+  const scImg = document.getElementById('sc-img');
+  const origSrc = scImg.src;
+  if (window._shareImgB64) {
+    scImg.src = window._shareImgB64;
+    scImg.style.display = 'block';
+  } else {
+    scImg.style.display = 'none';
+  }
+
+  try {
+    const canvas = await html2canvas(card, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: null,
+      logging: false,
+      width: 600,
+      windowWidth: 600
+    });
+
+    const link = document.createElement('a');
+    link.download = '人不太行_说唱人格测试.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+
+    scImg.src = origSrc;
+    scImg.style.display = 'block';
+
+    btn.textContent = '已保存！';
+    setTimeout(() => {
+      btn.textContent = origText;
+      btn.disabled = false;
+    }, 2000);
+  } catch (e) {
+    console.error(e);
+    scImg.src = origSrc;
+    scImg.style.display = 'block';
+    btn.textContent = '生成失败，请重试';
+    btn.disabled = false;
+  }
+}
+
+async function shareZhuanYe() {
+  const btn = document.querySelector('#screen-zhuan-ye .btn-share');
+  const origText = btn.textContent;
+  btn.textContent = '生成中…';
+  btn.disabled = true;
+
+  // 填充分享卡内容（转业版）
+  document.getElementById('sc-type').textContent = '转业结局';
+  document.getElementById('sc-rapper').textContent = '某地级市文化广电局';
+  document.getElementById('sc-pct').innerHTML = '有编制<span> 岗位</span>';
+  document.getElementById('sc-desc').textContent = '话筒已帮您轻轻放下。您对稳定的渴望、对规则的遵循、对突发状况的本能回避——在那里，都会被善待。';
+  const scImg = document.getElementById('sc-img');
+  scImg.style.display = 'none';
+
+  const card = document.getElementById('share-card');
+  card.style.left = '-9999px';
+  card.style.top = '0';
+
+  try {
+    const canvas = await html2canvas(card, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: null,
+      logging: false,
+      width: 600,
+      windowWidth: 600
+    });
+
+    const link = document.createElement('a');
+    link.download = '人不太行_说唱人格测试.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+
+    btn.textContent = '已保存！';
+    setTimeout(() => {
+      btn.textContent = origText;
+      btn.disabled = false;
+    }, 2000);
+  } catch (e) {
+    console.error(e);
+    btn.textContent = '生成失败，请重试';
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>
