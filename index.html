@@ -88,9 +88,9 @@ body::before {
 }
 .start-title {
   text-shadow:
-    -0.02em -0.02em 0 var(--red),
-    -0.04em -0.04em 0 var(--red),
-    -0.06em -0.06em 0 var(--red);
+    0.02em 0.02em 0 var(--red),
+    0.04em 0.04em 0 var(--red),
+    0.06em 0.06em 0 var(--red);
 }
 .start-title::after {
   display: none;
@@ -1132,9 +1132,6 @@ function showResult() {
   scImg.src = 'rappers/' + imgName + '.png';
   scImg.alt = match.rapper;
   scImg.style.display = 'block';
-
-  // 生成二维码
-  generateQRCode();
 
   // 进度条填满
   document.getElementById('progress-fill').style.width = '100%';
