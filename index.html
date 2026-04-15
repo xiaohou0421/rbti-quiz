@@ -1257,54 +1257,56 @@ async function shareResult() {
       windowWidth: 800
     });
 
-    // 转换为 blob
-    canvas.toBlob(async (blob) => {
-      if (!blob) {
-        throw new Error('Canvas to Blob failed');
+    // 转换为 blob（Promise 包装）
+    const blob = await new Promise((resolve) => {
+      canvas.toBlob(resolve, 'image/png');
+    });
+
+    if (!blob) {
+      throw new Error('Canvas to Blob failed');
+    }
+
+    // 尝试 Web Share API（移动端原生分享）
+    if (navigator.canShare && navigator.canShare({ files: [blob] })) {
+      try {
+        const file = new File([blob], '人不太行_说唱人格测试.png', { type: 'image/png' });
+        await navigator.share({
+          files: [file],
+          title: '人不太行 · 说唱人格测试'
+        });
+
+        scImg.src = origSrc;
+        scImg.style.display = 'block';
+        scQR.src = origQRSrc;
+
+        btn.textContent = '已分享！';
+        setTimeout(() => {
+          btn.textContent = origText;
+          btn.disabled = false;
+        }, 2000);
+        return;
+      } catch (shareErr) {
+        // 用户取消分享或分享失败，降级到下载
+        console.log('Share cancelled or failed, fallback to download');
       }
+    }
 
-      // 尝试 Web Share API（移动端原生分享）
-      if (navigator.canShare && navigator.canShare({ files: [blob] })) {
-        try {
-          const file = new File([blob], '人不太行_说唱人格测试.png', { type: 'image/png' });
-          await navigator.share({
-            files: [file],
-            title: '人不太行 · 说唱人格测试'
-          });
+    // 降级：传统下载方式
+    const link = document.createElement('a');
+    link.download = '人不太行_说唱人格测试.png';
+    link.href = URL.createObjectURL(blob);
+    link.click();
+    URL.revokeObjectURL(link.href);
 
-          scImg.src = origSrc;
-          scImg.style.display = 'block';
-          scQR.src = origQRSrc;
+    scImg.src = origSrc;
+    scImg.style.display = 'block';
+    scQR.src = origQRSrc;
 
-          btn.textContent = '已分享！';
-          setTimeout(() => {
-            btn.textContent = origText;
-            btn.disabled = false;
-          }, 2000);
-          return;
-        } catch (shareErr) {
-          // 用户取消分享或分享失败，降级到下载
-          console.log('Share cancelled or failed, fallback to download');
-        }
-      }
-
-      // 降级：传统下载方式
-      const link = document.createElement('a');
-      link.download = '人不太行_说唱人格测试.png';
-      link.href = URL.createObjectURL(blob);
-      link.click();
-      URL.revokeObjectURL(link.href);
-
-      scImg.src = origSrc;
-      scImg.style.display = 'block';
-      scQR.src = origQRSrc;
-
-      btn.textContent = '已保存！';
-      setTimeout(() => {
-        btn.textContent = origText;
-        btn.disabled = false;
-      }, 2000);
-    }, 'image/png');
+    btn.textContent = '已保存！';
+    setTimeout(() => {
+      btn.textContent = origText;
+      btn.disabled = false;
+    }, 2000);
 
   } catch (e) {
     console.error(e);
