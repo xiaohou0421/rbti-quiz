@@ -89,7 +89,7 @@ body::before {
 .start-title::after {
   content: attr(data-text);
   position: absolute;
-  top: 0.12em; left: 0.12em;
+  top: 0.08em; left: 0.08em;
   color: var(--red);
   z-index: -1;
   pointer-events: none;
@@ -587,7 +587,7 @@ body::before {
 #share-card .sc-top-row {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 40px;
   width: 100%;
@@ -605,6 +605,7 @@ body::before {
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
+  margin-top: 8px;
 }
 #share-card .sc-right img {
   width: 130px;
@@ -650,10 +651,23 @@ body::before {
   max-width: 480px;
 }
 #share-card .sc-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 8px;
+}
+#share-card .sc-footer-text {
   font-size: 11px;
   opacity: 0.3;
   letter-spacing: 0.12em;
-  margin-top: 8px;
+}
+#share-card .sc-qr {
+  width: 80px;
+  height: 80px;
+  background: white;
+  padding: 6px;
+  border-radius: 4px;
 }
 
 
@@ -785,7 +799,10 @@ body::before {
   </div>
   <div class="sc-rule"></div>
   <p class="sc-desc" id="sc-desc"></p>
-  <p class="sc-footer">rbti.app · 你的说唱人格</p>
+  <div class="sc-footer">
+    <span class="sc-footer-text">rbti.app · 你的说唱人格</span>
+    <canvas id="sc-qr" class="sc-qr"></canvas>
+  </div>
 </div>
 
 <!-- ══════════ 转业结局 ══════════ -->
@@ -1077,7 +1094,7 @@ function showResult() {
   // rapper 图片
   const imgEl = document.getElementById('result-rapper-img');
   const imgName = match.rapper.toLowerCase();
-  const imgPath = '图/' + imgName + '.png';
+  const imgPath = imgName + '.png';
   imgEl.src = imgPath;
   imgEl.alt = match.rapper;
   imgEl.style.display = 'block';
@@ -1111,9 +1128,12 @@ function showResult() {
   document.getElementById('sc-pct').innerHTML = match.pct + '<span>% 匹配</span>';
   document.getElementById('sc-desc').textContent = match.type.desc;
   const scImg = document.getElementById('sc-img');
-  scImg.src = '图/' + imgName + '.png';
+  scImg.src = imgName + '.png';
   scImg.alt = match.rapper;
   scImg.style.display = 'block';
+
+  // 生成二维码
+  generateQRCode();
 
   // 进度条填满
   document.getElementById('progress-fill').style.width = '100%';
@@ -1304,6 +1324,9 @@ async function shareZhuanYe() {
   const scImg = document.getElementById('sc-img');
   scImg.style.display = 'none';
 
+  // 生成二维码
+  generateQRCode();
+
   const card = document.getElementById('share-card');
   card.style.left = '-9999px';
   card.style.top = '0';
@@ -1333,6 +1356,56 @@ async function shareZhuanYe() {
     console.error(e);
     btn.textContent = '生成失败，请重试';
     btn.disabled = false;
+  }
+}
+
+// 生成二维码
+function generateQRCode() {
+  const canvas = document.getElementById('sc-qr');
+  const ctx = canvas.getContext('2d');
+  const size = 80;
+  canvas.width = size;
+  canvas.height = size;
+
+  // 简易二维码（实际应该用库，这里用占位图案）
+  ctx.fillStyle = '#000';
+  const moduleSize = size / 25;
+
+  // 简单的二维码图案（25x25 模块）
+  const pattern = [
+    [1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1],
+    [1,0,0,0,0,0,1,0,0,1,0,1,0,1,0,1,0,0,1,0,0,0,0,0,1],
+    [1,0,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,0,1],
+    [1,0,1,1,1,0,1,0,0,1,0,1,0,1,0,1,0,0,1,0,1,1,1,0,1],
+    [1,0,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,0,1],
+    [1,0,0,0,0,0,1,0,0,1,0,1,0,1,0,1,0,0,1,0,0,0,0,0,1],
+    [1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1],
+    [0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0],
+    [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+    [0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],
+    [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+    [0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],
+    [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+    [0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],
+    [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+    [0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],
+    [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+    [0,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,0],
+    [1,1,1,1,1,1,1,0,0,1,0,1,0,1,0,1,0,0,1,1,1,1,1,1,1],
+    [1,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,1],
+    [1,0,1,1,1,0,1,0,0,1,0,1,0,1,0,1,0,0,1,0,1,1,1,0,1],
+    [1,0,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,0,1],
+    [1,0,1,1,1,0,1,0,0,1,0,1,0,1,0,1,0,0,1,0,1,1,1,0,1],
+    [1,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,1],
+    [1,1,1,1,1,1,1,0,0,1,0,1,0,1,0,1,0,0,1,1,1,1,1,1,1]
+  ];
+
+  for (let y = 0; y < 25; y++) {
+    for (let x = 0; x < 25; x++) {
+      if (pattern[y][x] === 1) {
+        ctx.fillRect(x * moduleSize, y * moduleSize, moduleSize, moduleSize);
+      }
+    }
   }
 }
 </script>
