@@ -1225,10 +1225,9 @@ async function shareResult() {
   const origSrc = scImg.src;
   if (window._shareImgB64) {
     scImg.src = window._shareImgB64;
-    scImg.style.display = 'block';
-  } else {
-    scImg.style.display = 'none';
   }
+  // 无论如何都显示图片元素，让 html2canvas 尝试加载
+  scImg.style.display = 'block';
 
   try {
     const canvas = await html2canvas(card, {
