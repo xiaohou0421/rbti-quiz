@@ -403,7 +403,7 @@ body::before {
   gap: 0.8rem;
   flex-wrap: wrap;
   justify-content: center;
-  margin-top: 1.8rem;
+  margin-top: 3.5rem;
 }
 
 .btn-restart {
@@ -583,7 +583,7 @@ body::before {
   color: #F2EDE4;
   line-height: 1.0;
   position: absolute;
-  left: 45px;
+  left: 10px;
   top: 105px;
   max-width: 380px;
   text-shadow: 0.055em 0.08em 0 #A83B24;
@@ -1229,18 +1229,37 @@ async function shareResult() {
   const origSrc = scImg.src;
   const origQRSrc = scQR.src;
 
+  console.log('原始图片路径:', origSrc);
+  console.log('base64 状态:', window._shareImgB64 ? '已加载' : '未加载', window._qrCodeB64 ? '已加载' : '未加载');
+
+  // 如果 base64 还没准备好，等待最多2秒
+  if (!window._shareImgB64 || !window._qrCodeB64) {
+    console.log('等待图片加载...');
+    let waited = 0;
+    while ((!window._shareImgB64 || !window._qrCodeB64) && waited < 2000) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      waited += 100;
+    }
+    console.log('等待结束，waited:', waited);
+  }
+
   if (window._shareImgB64) {
     scImg.src = window._shareImgB64;
     scImg.style.display = 'block';
+    console.log('使用 base64 头像');
   } else {
-    scImg.style.display = 'none';
+    // 降级：直接用原路径（可能会有跨域问题，但至少显示）
+    scImg.src = origSrc;
+    scImg.style.display = origSrc ? 'block' : 'none';
+    console.log('降级使用原路径');
   }
 
   if (window._qrCodeB64) {
     scQR.src = window._qrCodeB64;
     scQR.style.display = 'block';
   } else {
-    scQR.style.display = 'none';
+    scQR.src = origQRSrc;
+    scQR.style.display = origQRSrc ? 'block' : 'none';
   }
 
   // 等待图片加载完成
