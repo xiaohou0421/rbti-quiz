@@ -1246,6 +1246,7 @@ async function shareResult() {
   // 等待图片加载完成
   await new Promise(resolve => setTimeout(resolve, 300));
 
+  console.log('开始生成 canvas...');
   try {
     const canvas = await html2canvas(card, {
       scale: 2,
@@ -1257,10 +1258,15 @@ async function shareResult() {
       windowWidth: 800
     });
 
-    // 转换为 blob（Promise 包装）
-    const blob = await new Promise((resolve) => {
-      canvas.toBlob(resolve, 'image/png');
-    });
+    console.log('canvas 生成完成');
+
+    // 转换为 data URL
+    const dataURL = canvas.toDataURL('image/png');
+
+    // 转换为 blob（从 data URL）
+    const blob = await fetch(dataURL).then(r => r.blob());
+
+    console.log('blob 转换完成:', blob);
 
     if (!blob) {
       throw new Error('Canvas to Blob failed');
@@ -1268,6 +1274,7 @@ async function shareResult() {
 
     // 尝试 Web Share API（移动端原生分享）
     if (navigator.canShare && navigator.canShare({ files: [blob] })) {
+      console.log('支持 Web Share API，尝试分享...');
       try {
         const file = new File([blob], '人不太行_说唱人格测试.png', { type: 'image/png' });
         await navigator.share({
@@ -1275,6 +1282,7 @@ async function shareResult() {
           title: '人不太行 · 说唱人格测试'
         });
 
+        console.log('分享成功');
         scImg.src = origSrc;
         scImg.style.display = 'block';
         scQR.src = origQRSrc;
@@ -1287,16 +1295,19 @@ async function shareResult() {
         return;
       } catch (shareErr) {
         // 用户取消分享或分享失败，降级到下载
-        console.log('Share cancelled or failed, fallback to download');
+        console.log('分享取消或失败，降级到下载:', shareErr);
       }
+    } else {
+      console.log('不支持 Web Share API，直接下载');
     }
 
     // 降级：传统下载方式
     const link = document.createElement('a');
     link.download = '人不太行_说唱人格测试.png';
-    link.href = URL.createObjectURL(blob);
+    link.href = dataURL;
     link.click();
-    URL.revokeObjectURL(link.href);
+
+    console.log('下载完成');
 
     scImg.src = origSrc;
     scImg.style.display = 'block';
@@ -1309,7 +1320,7 @@ async function shareResult() {
     }, 2000);
 
   } catch (e) {
-    console.error(e);
+    console.error('生成失败:', e);
     scImg.src = origSrc;
     scImg.style.display = 'block';
     scQR.src = origQRSrc;
