@@ -1225,117 +1225,38 @@ async function shareResult() {
   btn.textContent = '生成中…';
   btn.disabled = true;
 
+  const card = document.getElementById('share-card');
+  card.style.left = '-9999px';
+  card.style.top = '0';
+
+  // 用预读好的 base64 注入分享卡图片
+  const scImg = document.getElementById('sc-img');
+  const origSrc = scImg.src;
+  if (window._shareImgB64) {
+    scImg.src = window._shareImgB64;
+    scImg.style.display = 'block';
+  } else {
+    scImg.style.display = 'none';
+  }
+
   try {
-    const result = window._currentResult;
-    if (!result) throw new Error('No result data');
-
-    // 创建 canvas
-    const canvas = document.createElement('canvas');
-    canvas.width = 1200;
-    canvas.height = 1200;
-    const ctx = canvas.getContext('2d');
-
-    // 背景渐变
-    const grad = ctx.createLinearGradient(0, 0, 0, 1200);
-    grad.addColorStop(0, '#8CB2CA');
-    grad.addColorStop(1, '#527A90');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, 1200, 1200);
-
-    // 加载字体和图片
-    await document.fonts.ready;
-
-    // 顶部标签
-    ctx.fillStyle = 'rgba(242,237,228,0.8)';
-    ctx.font = '400 22px "Noto Sans SC", sans-serif';
-    ctx.letterSpacing = '0.35em';
-    ctx.textAlign = 'left';
-    ctx.fillText('人不太行 · 说唱人格测试 · RBTI', 104, 150);
-
-    // 左侧：类型名
-    ctx.fillStyle = '#F2EDE4';
-    ctx.font = '900 116px "Noto Sans SC", sans-serif';
-    ctx.letterSpacing = '0.04em';
-    ctx.textAlign = 'left';
-    const lines = wrapText(ctx, result.typeName, 400);
-    let y = 260;
-    lines.forEach(line => {
-      ctx.fillText(line, 104, y);
-      y += 120;
+    const canvas = await html2canvas(card, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: null,
+      logging: false,
+      width: 600,
+      windowWidth: 600
     });
 
-    // 左侧：匹配度
-    ctx.fillStyle = '#F2EDE4';
-    ctx.font = '900 88px "Noto Sans SC", sans-serif';
-    ctx.fillText(result.pct, 104, y + 80);
-    ctx.font = '400 28px "Noto Sans SC", sans-serif';
-    ctx.fillStyle = 'rgba(242,237,228,0.55)';
-    ctx.fillText('% 匹配', 104 + ctx.measureText(result.pct).width + 10, y + 80);
-
-    // 右侧：头像
-    if (window._shareImgB64) {
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = reject;
-        img.src = window._shareImgB64;
-      });
-
-      const imgSize = 260;
-      const imgX = 1200 - 104 - imgSize;
-      const imgY = 220;
-
-      // 绘制圆形头像
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(imgX + imgSize/2, imgY + imgSize/2, imgSize/2, 0, Math.PI * 2);
-      ctx.closePath();
-      ctx.clip();
-      ctx.drawImage(img, imgX, imgY, imgSize, imgSize);
-      ctx.restore();
-
-      // 头像边框
-      ctx.strokeStyle = 'rgba(242,237,228,0.25)';
-      ctx.lineWidth = 6;
-      ctx.beginPath();
-      ctx.arc(imgX + imgSize/2, imgY + imgSize/2, imgSize/2, 0, Math.PI * 2);
-      ctx.stroke();
-
-      // Rapper 名字
-      ctx.fillStyle = '#C8311A';
-      ctx.font = '700 44px "Noto Sans SC", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(result.rapper, imgX + imgSize/2, imgY + imgSize + 50);
-    }
-
-    // 分隔线
-    ctx.fillStyle = 'rgba(242,237,228,0.35)';
-    ctx.fillRect(104, y + 180, 80, 4);
-
-    // 描述文字
-    ctx.fillStyle = 'rgba(242,237,228,0.8)';
-    ctx.font = '400 30px "Noto Sans SC", sans-serif';
-    ctx.textAlign = 'left';
-    ctx.letterSpacing = '0';
-    const descLines = wrapText(ctx, result.desc, 960);
-    y = y + 240;
-    descLines.forEach(line => {
-      ctx.fillText(line, 104, y);
-      y += 56;
-    });
-
-    // 底部标签
-    ctx.fillStyle = 'rgba(242,237,228,0.5)';
-    ctx.font = '400 24px "Noto Sans SC", sans-serif';
-    ctx.letterSpacing = '0.08em';
-    ctx.fillText('rbti.app · 你的说唱人格', 104, 1100);
-
-    // 下载
     const link = document.createElement('a');
     link.download = '人不太行_说唱人格测试.png';
     link.href = canvas.toDataURL('image/png');
     link.click();
+
+    scImg.src = origSrc;
+    scImg.style.display = 'block';
 
     btn.textContent = '已保存！';
     setTimeout(() => {
@@ -1344,6 +1265,8 @@ async function shareResult() {
     }, 2000);
   } catch (e) {
     console.error(e);
+    scImg.src = origSrc;
+    scImg.style.display = 'block';
     btn.textContent = '生成失败，请重试';
     btn.disabled = false;
   }
