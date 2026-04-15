@@ -629,21 +629,13 @@ body::before {
   left: 60px;
   top: 550px;
 }
-#share-card .sc-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  position: absolute;
-  left: 60px;
-  bottom: 60px;
-  right: 60px;
-  width: calc(100% - 120px);
-}
 #share-card .sc-footer-text {
   font-size: 14px;
   opacity: 0.3;
   letter-spacing: 0.12em;
+  position: absolute;
+  left: 60px;
+  bottom: 60px;
 }
 #share-card .sc-qr {
   width: 220px;
@@ -652,6 +644,9 @@ body::before {
   padding: 6px;
   border-radius: 4px;
   object-fit: contain;
+  position: absolute;
+  right: 60px;
+  bottom: 50px;
 }
 
 
@@ -770,23 +765,13 @@ body::before {
 
 <!-- 离屏分享卡片 -->
 <div id="share-card">
-  <p class="sc-label">人不太行 · 说唱人格测试 · RBTI</p>
-  <div class="sc-top-row">
-    <div class="sc-left">
-      <span class="sc-type" id="sc-type"></span>
-      <div class="sc-pct" id="sc-pct"></div>
-    </div>
-    <div class="sc-right">
-      <img id="sc-img" src="" alt="" onerror="this.style.display='none'">
-      <span class="sc-rapper" id="sc-rapper"></span>
-    </div>
-  </div>
-  <div class="sc-rule"></div>
+  <span class="sc-type" id="sc-type"></span>
+  <div class="sc-pct" id="sc-pct"></div>
+  <img id="sc-img" src="" alt="" onerror="this.style.display='none'">
+  <span class="sc-rapper" id="sc-rapper"></span>
   <p class="sc-desc" id="sc-desc"></p>
-  <div class="sc-footer">
-    <span class="sc-footer-text">rbti.app · 你的说唱人格</span>
-    <img id="sc-qr" class="sc-qr" src="qrcode.png" alt="QR Code">
-  </div>
+  <span class="sc-footer-text">rbti.app · 你的说唱人格</span>
+  <img id="sc-qr" class="sc-qr" src="qrcode.png" alt="QR Code">
 </div>
 
 <!-- ══════════ 转业结局 ══════════ -->
